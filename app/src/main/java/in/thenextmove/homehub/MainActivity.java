@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     DBHelper dbHelper;
     private ConstraintLayout add_button_LAYOUT;
-    private TextView devicename_TEXTVIEW, status_TEXTVIEW, message_TEXTVIEW;
+    private TextView devicename_TEXTVIEW, status_TEXTVIEW, message_TEXTVIEW, add_button_TEXTVIEW;
     private EditText name_EDITTEXT,username_EDITTEXT,password_EDITTEXT,chipdid_EDITTEXT;
     BottomNavigationView navView;
     FragmentManager fragmentManager = getSupportFragmentManager();
@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     status_TEXTVIEW.setText(R.string.title_home);
-
                     ArrayList<String> usernames = dbHelper.getusernames();
                     for(int i = 0; i<usernames.size(); i++) {
                         Log.i("Debug", usernames.get(i));
@@ -64,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         status_TEXTVIEW.setBackgroundResource(R.drawable.rounded_background_blue);
         devicename_TEXTVIEW = findViewById(R.id.devicename_Textview);
         message_TEXTVIEW = findViewById(R.id.message_Textview);
+        add_button_TEXTVIEW = findViewById(R.id.addbutton_TextView);
         chipdid_EDITTEXT = findViewById(R.id.chipid_editText);
         name_EDITTEXT = findViewById(R.id.name_editText);
         username_EDITTEXT = findViewById(R.id.username_editText);
@@ -72,11 +72,11 @@ public class MainActivity extends AppCompatActivity {
 
         dbHelper = new DBHelper(this, null, null, 1);
 
+        add_button_TEXTVIEW.setText("Login");
         add_button_LAYOUT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 add_button_LAYOUT.setPressed(true);
-                Toast.makeText(getApplicationContext(), "Adding Credentials", Toast.LENGTH_SHORT).show();
                 getdata();
             }
         });
@@ -84,16 +84,35 @@ public class MainActivity extends AppCompatActivity {
 
     protected void getdata(){
         Log.i("Debug","Getting data");
-        String chipid = chipdid_EDITTEXT.getText().toString();
-        String name = name_EDITTEXT.getText().toString();
-        String username = username_EDITTEXT.getText().toString();
+        String chipid = (chipdid_EDITTEXT.getText().toString()).toUpperCase();
+        String name = (name_EDITTEXT.getText().toString()).toUpperCase();
+        String username = (username_EDITTEXT.getText().toString()).toUpperCase();
         String password = password_EDITTEXT.getText().toString();
-        if(username.length() >0 & password.length() >0 & chipid.length() >0 ) {
-            dbHelper.addCredentials(username,password,name,chipid);
-            Log.i("H.O.M.E", "Database Created");
-            Intent myIntent = new Intent(this, DeviceActivity.class);
-            myIntent.putExtra("username",username);
-            startActivity(myIntent);
+        if(username.length() >0 & password.length() >0) {
+            if(chipid.length()<=0){
+                if (password.contentEquals(dbHelper.getusernamepasswords(username))) {
+                    Log.i("H.O.M.E", "Correct Password");
+                    Toast.makeText(getApplicationContext(),"Login successful",Toast.LENGTH_SHORT).show();
+                    Intent myIntent = new Intent(this, DeviceActivity.class);
+                    myIntent.putExtra("email",username);
+                    startActivity(myIntent);
+                }
+                else{
+                    Log.i("H.O.M.E", "Incorrect Password");
+                    Toast.makeText(getApplicationContext(),"Incorrect Password",Toast.LENGTH_SHORT).show();
+                    chipdid_EDITTEXT.setText("");
+                    username_EDITTEXT.setText("");
+                    password_EDITTEXT.setText("");
+                    name_EDITTEXT.setText("");
+                }
+            }
+            else{
+                dbHelper.addCredentials(username, password, name, chipid);
+                Log.i("H.O.M.E", "Added To Database");
+                Intent myIntent = new Intent(this, DeviceActivity.class);
+                myIntent.putExtra("email",username);
+                startActivity(myIntent);
+            }
         }
         else{
             if(username.length()<=0){
@@ -101,9 +120,6 @@ public class MainActivity extends AppCompatActivity {
             }
             if(password.length()<=0) {
                 Toast.makeText(getApplicationContext(), "Enter Password", Toast.LENGTH_SHORT).show();
-            }
-            if(chipid.length()<=0) {
-                Toast.makeText(getApplicationContext(), "Enter Chipid", Toast.LENGTH_SHORT).show();
             }
             chipdid_EDITTEXT.setText("");
             username_EDITTEXT.setText("");

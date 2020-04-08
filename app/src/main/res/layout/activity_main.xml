@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@mipmap/background_10">
+    android:background="@mipmap/background_4">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
+        android:layout_height="670dp"
+        android:layout_margin="10dp"
         android:orientation="vertical">
 
         <android.support.constraint.ConstraintLayout
@@ -25,6 +25,7 @@
                 android:paddingTop="5dp"
                 android:textAlignment="center"
                 android:textSize="20dp"
+
                 android:textColor="@color/white"
                 android:background="@drawable/rounded_background"
                 android:fontFamily="sans-serif-thin"
@@ -99,29 +100,60 @@
 
         </android.support.constraint.ConstraintLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="100dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingRight="25dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
         <EditText
             android:id="@+id/username_editText"
-            android:layout_width="320dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#FFFFFF"
-            android:padding="10dp"
-            android:layout_margin="10dp"
             android:background="@drawable/rounded_background"
             android:ems="10"
             android:hint="Username"
+            android:padding="10dp"
+            android:textSize="15dp"
             android:inputType="textEmailAddress" />
 
-        <EditText
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
+
+            <EditText
             android:id="@+id/password_editText"
-            android:layout_width="320dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#FFFFFF"
-            android:padding="10dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/rounded_background"
+            android:background="@drawable/rounded_background_red"
             android:ems="10"
             android:hint="Password"
+            android:padding="10dp"
+            android:textSize="15dp"
             android:inputType="textPassword" />
+    </LinearLayout>
+    </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="15dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -129,7 +161,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="220dp"
+                android:layout_width="200dp"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
@@ -140,42 +172,48 @@
 
                     <EditText
                         android:id="@+id/name_editText"
-                        android:layout_width="200dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/rounded_background"
                         android:backgroundTint="#FFFFFF"
+                        android:background="@drawable/rounded_background"
                         android:ems="10"
                         android:hint="Nickname"
-                        android:inputType="text"
-                        android:padding="10dp" />
+                        android:padding="10dp"
+                        android:textSize="10dp"
+                        android:inputType="textEmailAddress" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"/>
 
                     <EditText
                         android:id="@+id/chipid_editText"
-                        android:layout_width="200dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
+                        android:backgroundTint="#FFFFFF"
                         android:background="@drawable/rounded_background"
-                        android:backgroundTint="#FDFDFD"
                         android:ems="10"
-                        android:foregroundTint="#BC3F3F"
-                        android:hint="CHIPID"
-                        android:inputType="textVisiblePassword"
-                        android:padding="10dp" />
+                        android:hint="Chip ID"
+                        android:padding="10dp"
+                        android:textSize="10dp"
+                        android:inputType="textEmailAddress"  />
+
                 </LinearLayout>
             </LinearLayout>
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="match_parent"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="0dp">
+                android:orientation="horizontal">
 
                 <android.support.constraint.ConstraintLayout
                     android:id="@+id/add_button_layout"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_margin="15dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:background="@drawable/rounded_background"
                     android:backgroundTint="@color/white"
                     android:elevation="10dp">
@@ -186,7 +224,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/add_button"
+                            android:id="@+id/addbutton_TextView"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
@@ -194,17 +232,15 @@
                             android:text="ADD"
                             android:backgroundTint="@color/grey"
                             android:elevation="10dp"
-                            android:textColor="@color/grey"
+                            android:textColor="@color/black"
                             android:textSize="20dp"
                             android:textStyle="normal" />
 
                     </LinearLayout>
-
                 </android.support.constraint.ConstraintLayout>
-
             </LinearLayout>
         </LinearLayout>
-
+    </LinearLayout>
     </LinearLayout>
 
 

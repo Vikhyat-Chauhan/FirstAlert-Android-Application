@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DeviceActivity"
-    android:background="@mipmap/background_13">
+    android:background="@mipmap/background_4">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -105,7 +105,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="30dp">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/gasstatus_Layout"
@@ -189,7 +190,8 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="330dp"
             android:layout_height="150dp"
-            android:layout_margin="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/rounded_background"
             android:backgroundTint="@color/grey"
             android:elevation="10dp">

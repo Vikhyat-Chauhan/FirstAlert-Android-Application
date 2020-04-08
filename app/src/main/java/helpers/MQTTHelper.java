@@ -19,7 +19,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class MQTTHelper {
-    String error="";
     public MqttAndroidClient mqttAndroidClient;
     public MQTTHelper(Context context, String serverUri, String clientId, String username, String password, final String subscriptionTopic, final String Publish_Topic){
         mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
@@ -36,17 +35,6 @@ public class MQTTHelper {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-                Log.w("Debug",mqttMessage.toString());
-                String message = mqttMessage.toString();
-                String command = message.substring(1,4);
-                String value = message.substring(5,message.indexOf('X'));
-                if(command.contentEquals("ERR")){
-                    error = value;
-                    Log.w("Debug","ERROR Recieved : "+error);
-                }
-                else{
-                    Log.w("Debug","Incomming data : "+message);
-                }
             }
 
             @Override

@@ -31,18 +31,22 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import helpers.MQTTHelper;
+import helpers.DBHelper;
 
 public class DeviceActivity extends AppCompatActivity {
-    //user data
-    String email,pass,name = "Ivan",chipid = "4060431";
+    //Database helper
+    DBHelper dbHelper;
+
+    //user data = "4060431"
+    String email,pass,name,chipid;
 
     //get these from calling activity
-    String greetingstring = "Afternoon " + name;
+    String greetingstring = "Afternoon ";
 
     //MQTT Strings
     MQTTHelper mqttHelper;
-    String Publish_Topic = chipid +"ESP";
-    String subscriptionTopic = chipid+"/#";
+    String Publish_Topic;
+    String subscriptionTopic;
     final String serverUri = "tcp://m12.cloudmqtt.com:12233";//"tcp://api.sensesmart.in:1883";
     final String username = "wbynzcri";
     final String password = "uOIqIxMgf3Dl";
@@ -82,7 +86,7 @@ public class DeviceActivity extends AppCompatActivity {
         //get data from starting activity
         Bundle b = getIntent().getExtras();
         if (b != null) {
-            chipid = b.getString("chipid");
+            email = b.getString("email");
         }
 
         setContentView(R.layout.activity_device);
@@ -91,6 +95,7 @@ public class DeviceActivity extends AppCompatActivity {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
+        //Bottom Navigation
         BottomNavigationView navView = findViewById(R.id.nav_view);
         //Textviews
         statustextview = findViewById(R.id.status_TextView);
@@ -107,6 +112,15 @@ public class DeviceActivity extends AppCompatActivity {
 
         //Navigation View Setup
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        //initiate database
+        dbHelper = new DBHelper(this, null, null, 1);
+        name = dbHelper.getusernamenames(email);
+        greetingstring = greetingstring.concat(name);
+        pass = dbHelper.getusernamepasswords(email);
+        chipid = dbHelper.getusernamechipid(email);
+        Publish_Topic = chipid +"ESP";
+        subscriptionTopic = chipid+"/#";
 
         //Setup Widget String Values
         statustextview.setText("Offline");
@@ -146,12 +160,8 @@ public class DeviceActivity extends AppCompatActivity {
                 }
             }
         });
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d("Debug", "onstart");
+        //This was previously in onstart case
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED){
             // TODO: Consider calling
@@ -187,56 +197,58 @@ public class DeviceActivity extends AppCompatActivity {
                 //Log.w("Debug",topic);
                 //Log.w("Debug",mqttMessage.toString());
                 String intopic = topic;
-                String sub = intopic.substring(0,intopic.indexOf('/'));
-                intopic = intopic.substring(intopic.indexOf('/')+1);
-                sub = intopic.substring(0,intopic.indexOf('/'));
-                intopic = intopic.substring(intopic.indexOf('/')+1);
-                if(sub.contentEquals("sensor")){
-                    sub = intopic.substring(0,intopic.indexOf('/'));
-                    intopic = intopic.substring(intopic.indexOf('/')+1);
-                    if(sub.contentEquals("0")){
-                        sub = intopic.substring(0,intopic.indexOf('/'));
-                        intopic = intopic.substring(intopic.indexOf('/')+1);
-                        if(sub.contentEquals("type")){
-                            sensortype = mqttMessage.toString();
-                        }
-                        if(sub.contentEquals("threshold")){
-                            threshold = mqttMessage.toString();
-                        }
-                        if(sub.contentEquals("state")){
-                            state = mqttMessage.toString();
-                            if((state.contentEquals("0"))){
-                                gasstatuslayout.setBackgroundResource(R.drawable.rounded_background_green);
-                                gasstatustextview.setText("SAFE");
+                String sub = intopic.substring(0, intopic.indexOf('/'));
+                intopic = intopic.substring(intopic.indexOf('/') + 1);
+                if (sub.contentEquals((chipid))) {
+                    sub = intopic.substring(0, intopic.indexOf('/'));
+                    intopic = intopic.substring(intopic.indexOf('/') + 1);
+                    if (sub.contentEquals("sensor")) {
+                        sub = intopic.substring(0, intopic.indexOf('/'));
+                        intopic = intopic.substring(intopic.indexOf('/') + 1);
+                        if (sub.contentEquals("0")) {
+                            sub = intopic.substring(0, intopic.indexOf('/'));
+                            intopic = intopic.substring(intopic.indexOf('/') + 1);
+                            if (sub.contentEquals("type")) {
+                                sensortype = mqttMessage.toString();
                             }
-                            if((state.contentEquals("1"))){
-                                gasstatuslayout.setBackgroundResource(R.drawable.rounded_background_red);
-                                gasstatustextview.setText("LEAK");
+                            if (sub.contentEquals("threshold")) {
+                                threshold = mqttMessage.toString();
+                            }
+                            if (sub.contentEquals("state")) {
+                                state = mqttMessage.toString();
+                                if ((state.contentEquals("0"))) {
+                                    gasstatuslayout.setBackgroundResource(R.drawable.rounded_background_green);
+                                    gasstatustextview.setText("SAFE");
+                                }
+                                if ((state.contentEquals("1"))) {
+                                    gasstatuslayout.setBackgroundResource(R.drawable.rounded_background_red);
+                                    gasstatustextview.setText("LEAK");
+                                }
                             }
                         }
                     }
-                }
-                if(sub.contentEquals("information")){
-                    sub = intopic.substring(0,intopic.indexOf('/'));
-                    intopic = intopic.substring(intopic.indexOf('/')+1);
-                    if(sub.contentEquals("codename")){
-                        codename = (mqttMessage.toString());
-                        devicenametextview.setText(codename.substring(0,8));
+                    if (sub.contentEquals("information")) {
+                        sub = intopic.substring(0, intopic.indexOf('/'));
+                        intopic = intopic.substring(intopic.indexOf('/') + 1);
+                        if (sub.contentEquals("codename")) {
+                            codename = (mqttMessage.toString());
+                            devicenametextview.setText(codename.substring(0, 8));
+                        }
+                        if (sub.contentEquals("version")) {
+                            version = (mqttMessage.toString());
+                        }
                     }
-                    if(sub.contentEquals("version")){
-                        version = (mqttMessage.toString());
-                    }
-                }
-                if(sub.contentEquals("offline")){
-                    if(((mqttMessage.toString())).contentEquals("0")) {
-                        Log.w("Debug", "Device Online");
-                        statustextview.setText("Online");
-                        statustextview.setBackgroundResource(R.drawable.rounded_background_green);
-                    }
-                    if(((mqttMessage.toString())).contentEquals("1")) {
-                        Log.w("Debug", "Device Offline");
-                        statustextview.setText("Offline");
-                        statustextview.setBackgroundResource(R.drawable.rounded_background_red);
+                    if (sub.contentEquals("offline")) {
+                        if (((mqttMessage.toString())).contentEquals("0")) {
+                            Log.w("Debug", "Device Online");
+                            statustextview.setText("Online");
+                            statustextview.setBackgroundResource(R.drawable.rounded_background_green);
+                        }
+                        if (((mqttMessage.toString())).contentEquals("1")) {
+                            Log.w("Debug", "Device Offline");
+                            statustextview.setText("Offline");
+                            statustextview.setBackgroundResource(R.drawable.rounded_background_red);
+                        }
                     }
                 }
             }
@@ -246,6 +258,14 @@ public class DeviceActivity extends AppCompatActivity {
 
             }
         });
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("Debug", "onstart");
+
     }
 
 }

@@ -145,22 +145,22 @@ public class DBHelper extends SQLiteOpenHelper {
     //Extract username from Database
     public String getusernamenames(String username){
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT " + COLUMN_PASSWORD + " FROM " + TABLE_NAME + " WHERE " + COLUMN_USERNAME + "=\"" + username + "\";";
+        String query = "SELECT " + COLUMN_NAME + " FROM " + TABLE_NAME + " WHERE " + COLUMN_USERNAME + "=\"" + username + "\";";
         Cursor c = db.rawQuery(query,null);
         c.moveToFirst();
         String name = c.getString(0);
-        Log.i("Debug","Password retrieved.");
+        Log.i("Debug","Name retrieved.");
         return name;
     }
 
     //Extract username from Database
     public String getusernamechipid(String username){
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT " + COLUMN_PASSWORD + " FROM " + TABLE_NAME + " WHERE " + COLUMN_USERNAME + "=\"" + username + "\";";
+        String query = "SELECT " + COLUMN_CHIPID + " FROM " + TABLE_NAME + " WHERE " + COLUMN_USERNAME + "=\"" + username + "\";";
         Cursor c = db.rawQuery(query,null);
         c.moveToFirst();
         String chipid = c.getString(0);
-        Log.i("Debug","Password retrieved.");
+        Log.i("Debug","Chip ID retrieved.");
         return chipid;
     }
 }
