@@ -1,12 +1,17 @@
 package in.thenextmove.homehub;
 
+import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothClass;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView navView;
     FragmentManager fragmentManager = getSupportFragmentManager();
     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+    boolean permission = false;
+    int MY_PERMISSION;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -80,50 +87,74 @@ public class MainActivity extends AppCompatActivity {
                 getdata();
             }
         });
+
+        getpermissions();
     }
 
-    protected void getdata(){
-        Log.i("Debug","Getting data");
-        String chipid = (chipdid_EDITTEXT.getText().toString()).toUpperCase();
-        String name = (name_EDITTEXT.getText().toString()).toUpperCase();
-        String username = (username_EDITTEXT.getText().toString()).toUpperCase();
-        String password = password_EDITTEXT.getText().toString();
-        if(username.length() >0 & password.length() >0) {
-            if(chipid.length()<=0){
-                if (password.contentEquals(dbHelper.getusernamepasswords(username))) {
-                    Log.i("H.O.M.E", "Correct Password");
-                    Toast.makeText(getApplicationContext(),"Login successful",Toast.LENGTH_SHORT).show();
+    protected void getdata() {
+        if(permission){
+            Log.i("Debug", "Getting data");
+            String chipid = (chipdid_EDITTEXT.getText().toString()).toUpperCase();
+            String name = (name_EDITTEXT.getText().toString()).toUpperCase();
+            String username = (username_EDITTEXT.getText().toString()).toUpperCase();
+            String password = password_EDITTEXT.getText().toString();
+            if (username.length() > 0 & password.length() > 0) {
+                if (chipid.length() <= 0) {
+                    if (password.contentEquals(dbHelper.getusernamepasswords(username))) {
+                        Log.i("H.O.M.E", "Correct Password");
+                        Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
+                        Intent myIntent = new Intent(this, DeviceActivity.class);
+                        myIntent.putExtra("email", username);
+                        startActivity(myIntent);
+                    } else {
+                        Log.i("H.O.M.E", "Incorrect Password");
+                        Toast.makeText(getApplicationContext(), "Incorrect Password", Toast.LENGTH_SHORT).show();
+                        chipdid_EDITTEXT.setText("");
+                        username_EDITTEXT.setText("");
+                        password_EDITTEXT.setText("");
+                        name_EDITTEXT.setText("");
+                    }
+                } else {
+                    dbHelper.addCredentials(username, password, name, chipid);
+                    Log.i("H.O.M.E", "Added To Database");
                     Intent myIntent = new Intent(this, DeviceActivity.class);
-                    myIntent.putExtra("email",username);
+                    myIntent.putExtra("email", username);
                     startActivity(myIntent);
                 }
-                else{
-                    Log.i("H.O.M.E", "Incorrect Password");
-                    Toast.makeText(getApplicationContext(),"Incorrect Password",Toast.LENGTH_SHORT).show();
-                    chipdid_EDITTEXT.setText("");
-                    username_EDITTEXT.setText("");
-                    password_EDITTEXT.setText("");
-                    name_EDITTEXT.setText("");
+            } else {
+                if (username.length() <= 0) {
+                    Toast.makeText(getApplicationContext(), "Enter Username", Toast.LENGTH_SHORT).show();
                 }
-            }
-            else{
-                dbHelper.addCredentials(username, password, name, chipid);
-                Log.i("H.O.M.E", "Added To Database");
-                Intent myIntent = new Intent(this, DeviceActivity.class);
-                myIntent.putExtra("email",username);
-                startActivity(myIntent);
+                if (password.length() <= 0) {
+                    Toast.makeText(getApplicationContext(), "Enter Password", Toast.LENGTH_SHORT).show();
+                }
+                chipdid_EDITTEXT.setText("");
+                username_EDITTEXT.setText("");
+                password_EDITTEXT.setText("");
             }
         }
         else{
-            if(username.length()<=0){
-                Toast.makeText(getApplicationContext(), "Enter Username", Toast.LENGTH_SHORT).show();
-            }
-            if(password.length()<=0) {
-                Toast.makeText(getApplicationContext(), "Enter Password", Toast.LENGTH_SHORT).show();
-            }
-            chipdid_EDITTEXT.setText("");
-            username_EDITTEXT.setText("");
-            password_EDITTEXT.setText("");
+            Toast.makeText(getApplicationContext(), "Provide Permissions", Toast.LENGTH_SHORT).show();
+            getpermissions();
+        }
+    }
+
+    protected void getpermissions(){
+        // Here, thisActivity is the current activity
+        if ((ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) & (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED)){
+
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.READ_PHONE_STATE},
+                        MY_PERMISSION);Log.i("Debug",String.valueOf(MY_PERMISSION));
+                        permission = true;
+
+        } else {
+            // Permission has already been granted
+            permission = true;
         }
     }
 }

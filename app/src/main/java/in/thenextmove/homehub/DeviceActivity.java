@@ -30,6 +30,8 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.util.Calendar;
+
 import helpers.MQTTHelper;
 import helpers.DBHelper;
 
@@ -41,7 +43,8 @@ public class DeviceActivity extends AppCompatActivity {
     String email,pass,name,chipid;
 
     //get these from calling activity
-    String greetingstring = "Afternoon ";
+    String greetingstring = "";
+    private int mHour;
 
     //MQTT Strings
     MQTTHelper mqttHelper;
@@ -116,12 +119,27 @@ public class DeviceActivity extends AppCompatActivity {
         //initiate database
         dbHelper = new DBHelper(this, null, null, 1);
         name = dbHelper.getusernamenames(email);
-        greetingstring = greetingstring.concat(name);
         pass = dbHelper.getusernamepasswords(email);
         chipid = dbHelper.getusernamechipid(email);
         Publish_Topic = chipid +"ESP";
         subscriptionTopic = chipid+"/#";
 
+        // Get Current Time
+        final Calendar c = Calendar.getInstance();
+        mHour = c.get(Calendar.HOUR_OF_DAY);
+        if(3<=mHour & mHour<12){
+            greetingstring = "Morning";
+        }
+        else if(13<=mHour & mHour<16){
+            greetingstring = "Afternoon";
+        }
+        else if(16<=mHour & mHour<20){
+            greetingstring = "Evening";
+        }
+        else if(20<=mHour & mHour<3){
+            greetingstring = "Good Night";
+        }
+        greetingstring.concat(name);
         //Setup Widget String Values
         statustextview.setText("Offline");
         greetingtextview.setText(greetingstring);
@@ -175,6 +193,12 @@ public class DeviceActivity extends AppCompatActivity {
         }
         clientId = telephonyManager.getDeviceId();
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("Debug", "onstart");
         mqttHelper = new MQTTHelper(getApplicationContext(),serverUri,clientId,username,password,subscriptionTopic,Publish_Topic);
 
         //mqtt stuff
@@ -182,7 +206,6 @@ public class DeviceActivity extends AppCompatActivity {
             @Override
             public void connectComplete(boolean reconnect, String serverURI) {
                 Log.e("Debug"," Device Connected");
-                statustextview.setText("Online");
                 statustextview.setBackgroundResource(R.drawable.rounded_background_blue);
             }
 
@@ -258,14 +281,6 @@ public class DeviceActivity extends AppCompatActivity {
 
             }
         });
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d("Debug", "onstart");
-
     }
 
 }
